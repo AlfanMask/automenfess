@@ -21,10 +21,12 @@ app.post('/tweet', async (req: Request, res: Response) => {
     // tweet
     try {
         const twtPostUrl: string = await postTweet(tweet.message)
+        console.log(10)
         res.json({
             twtPostUrl,
             status: 200,
         })
+        console.log(11)
     } catch (error) {
         res.sendStatus(500);
     }

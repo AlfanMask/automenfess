@@ -52,39 +52,51 @@ async function login(email: string, username: string, password: string) {
   }
   
 async function postTweet(message: string): Promise<string> {
-    const inputBtn = await page.waitForSelector('::-p-xpath(//*[@id="react-root"]/div/div/div[2]/main/div/div/div/div[1]/div/div[3]/div/div[2]/div[1]/div/div/div/div[2]/div[1])');
+    console.log(0)
+    const inputBtn = await page.waitForSelector('::-p-xpath(//*[@id="react-root"]/div/div/div[2]/main/div/div/div/div[1]/div/div[3]/div/div[2]/div[1]/div/div/div/div[2]/div[1]/div/div/div/div/div/div/div/div/div/div/div/div[1]/div)');
+    // const inputBtn = await page.locator('textarea')
+    console.log(inputBtn)
     await inputBtn?.click()
+    console.log(1)
     
     await page.keyboard.type(message, { delay: 100 })
     await delay(1000);
+    console.log(2)
   
     const postBtn = await page.waitForSelector('::-p-xpath(//*[@id="react-root"]/div/div/div[2]/main/div/div/div/div[1]/div/div[3]/div/div[2]/div[1]/div/div/div/div[2]/div[2]/div[2]/div/div/div/button)');
     await postBtn?.click()
     await delay(1000);
+    console.log(3)
   
     // if any popup with close button -> click close
     const buttonCount = await page.$$eval('button[aria-label="Close"]', (buttons) => buttons.length);
+    console.log(4)
     const isAnyCloseBtn = buttonCount > 0;
     if (isAnyCloseBtn) {
       await page.locator('button[aria-label="Close"]').click()
       await delay(1000);
+      console.log(5)
     }
 
     // get post url
     // check top article that cotnains menfess username
     await delay(5000);
     const articleElements = await page.$$('article');
+    console.log(6)
     for (const article of articleElements) {
       const textContent = await article.evaluate(el => el.textContent);
+      console.log(7)
       if (textContent?.includes(`@${process.env.USERNAME_TWT}`)) {
         await article?.click()
         await delay(1000);
         const postUrl = await page.url()
         await delay(1000);
         await page.goBack()
+        console.log(8)
         return postUrl;
       }
     }
+    console.log(9)
     return ''
 }
 
