@@ -6,14 +6,17 @@ async function login(email: string, username: string, password: string) {
     // fill email
     await page.locator('input.r-30o5oe').fill(email);
     await delay(1000);
+    console.log('a1')
   
     // click next
     let nextBtn: ElementHandle<NodeFor<any>> | null = await page.waitForSelector('::-p-xpath(//*[@id="layers"]/div[2]/div/div/div/div/div/div[2]/div[2]/div/div/div[2]/div[2]/div/div/div/button[2])') || null;
     await nextBtn?.click()
     await delay(1000);
+    console.log('a2')
     
     // check if need to input username because unusual activity detected
     const spanElements = await page.$$('span');
+    console.log('a3')
     for (const span of spanElements) {
       const textContent = await span.evaluate(el => el.textContent);
       if (textContent?.includes('Enter your phone number or username')) {
@@ -24,29 +27,38 @@ async function login(email: string, username: string, password: string) {
         nextBtn = await page.waitForSelector('::-p-xpath(//*[@id="layers"]/div[2]/div/div/div/div/div/div[2]/div[2]/div/div/div[2]/div[2]/div[2]/div/div/div/button)');
         await nextBtn?.click()
         await delay(1000);
+        console.log('a3')
         break;
       }
     }
+    console.log('a4')
     
     await page.locator('input[type="password"]').fill(password)
     await delay(1000);
+    console.log('a5')
 
     nextBtn = await page.waitForSelector('::-p-xpath(//*[@id="layers"]/div[2]/div/div/div/div/div/div[2]/div[2]/div/div/div[2]/div[2]/div[2]/div/div[1]/div/div/button)');
     await nextBtn?.click()
     await delay(1000);
+    console.log('a6')
   
     // check if there is a closed button in popup -> close    
     const buttonCount = await page.$$eval('button[aria-label="Close"]', (buttons) => buttons.length);
+    console.log('a7')
     const isAnyCloseBtn = buttonCount > 0;
+    console.log('a8')
     if (isAnyCloseBtn) {
       await page.locator('button[aria-label="Close"]').click()
       await delay(1000);
+      console.log('a9')
     }
+    console.log('a10')
   
     // close bottom popup if any
     await delay(5000);
     const closeBtn = await page.waitForSelector('::-p-xpath(//*[@id="layers"]/div/div[1]/div/div/div/button)');
     await closeBtn?.click()
+    console.log('a11')
 
     console.log("LOGGED IN..")
   }
