@@ -39,7 +39,7 @@ async function login(email: string, username: string, password: string) {
 
     nextBtn = await page.waitForSelector('::-p-xpath(//*[@id="layers"]/div[2]/div/div/div/div/div/div[2]/div[2]/div/div/div[2]/div[2]/div[2]/div/div[1]/div/div/button)');
     await nextBtn?.click()
-    await delay(1000);
+    await delay(10000);
     console.log('a6')
   
     // check if there is a closed button in popup -> close    
