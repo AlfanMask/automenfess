@@ -13,10 +13,8 @@ export default async function startTweeter() {
 
   // generate random user agents so not detected as the same user
   const userAgent = require('user-agents');
-  console.log("main-1")
   console.log(userAgent.random().toString());
   await page.setUserAgent(userAgent.random().toString());
-  console.log("main-2")
 
 
   // Navigate to twitter login page

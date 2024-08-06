@@ -4,6 +4,7 @@ import cors from "cors";
 import Tweet from "./constants/tweet";
 import tweeting from "./modules/tweeting/main"
 import { postTweet } from "./modules/tweeting/tweeting";
+import { isProcessing, processQueue, queueTweets } from "./queue";
 
 // initialize express app and middlewares
 const app = express()
@@ -16,19 +17,12 @@ tweeting();
 // routes
 app.post('/tweet', async (req: Request, res: Response) => {
     const tweet: Tweet = req.body as Tweet;
+    queueTweets.push({ tweet, res })
     console.log(tweet.message);
 
-    // tweet
-    try {
-        const twtPostUrl: string = await postTweet(tweet.message)
-        console.log(10)
-        res.json({
-            twtPostUrl,
-            status: 200,
-        })
-        console.log(11)
-    } catch (error) {
-        res.sendStatus(500);
+    // process tweet post using queue
+    if (!isProcessing) {
+        processQueue()
     }
 });
 
