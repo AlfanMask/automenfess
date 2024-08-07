@@ -1,4 +1,4 @@
-import { ElementHandle, NodeFor, Page } from "puppeteer";
+import { ElementHandle, NodeFor } from "puppeteer";
 import { delay } from "./helper/helper";
 import { page } from "./main";
 
@@ -60,25 +60,44 @@ async function login(email: string, username: string, password: string) {
     await closeBtn?.click()
     console.log('login-11')
 
+    // if redirected to login again -> relogin
+    const span2Elements = await page.$$('span');
+    console.log('login-12')
+    for (const span of span2Elements) {
+      const textContent = await span.evaluate(el => el.textContent);
+      if (textContent?.includes('Happening now')) {
+        await page.goto('https://twitter.com/login/');
+        await delay(1000);
+        await login(email, username, password)
+        break;
+      }
+    }
+
     console.log("LOGGED IN..")
   }
   
 async function postTweet(message: string): Promise<string> {
     console.log('postTweet-1')
-    const inputBtn = await page.waitForSelector('::-p-xpath(//*[@id="react-root"]/div/div/div[2]/main/div/div/div/div[1]/div/div[3]/div/div[2]/div[1]/div/div/div/div[2]/div[1]/div/div/div/div/div/div/div/div/div/div/div/div[1]/div)');
-    // const inputBtn = await page.locator('textarea')
-    console.log(inputBtn)
-    await inputBtn?.click()
+    
+    // put the comment using puppeteer
+    // type R on keyboard to reply on the post
+    await page.keyboard.type('N')
+    await delay(2000)
     console.log('postTweet-2')
+    await page.screenshot({ path: 'postTweet2.png' })
     
     await page.keyboard.type(message, { delay: 100 })
     await delay(1000);
     console.log('postTweet-3')
-  
-    const postBtn = await page.waitForSelector('::-p-xpath(//*[@id="react-root"]/div/div/div[2]/main/div/div/div/div[1]/div/div[3]/div/div[2]/div[1]/div/div/div/div[2]/div[2]/div[2]/div/div/div/button)');
-    await postBtn?.click()
-    await delay(1000);
-    console.log('postTweet-4')
+    await page.screenshot({ path: 'postTweet3.png' })
+
+    // type ctrl + enter to post
+    page.keyboard.down('ControlLeft');
+    page.keyboard.press('Enter');
+    await delay(2000)
+    await page.keyboard.up('ControlLeft');
+    console.log('postTweet-4: POSTED!')
+    await page.screenshot({ path: 'postTweet3.png' })
   
     // if any popup with close button -> click close
     const buttonCount = await page.$$eval('button[aria-label="Close"]', (buttons) => buttons.length);
@@ -105,10 +124,12 @@ async function postTweet(message: string): Promise<string> {
         await delay(1000);
         await page.goBack()
         console.log('postTweet-9')
+        await page.screenshot({ path: 'postTweet9.png' })
         return postUrl;
       }
     }
-    console.log('postTweet-10')
+    console.log('postTweet-10: DONE!')
+    await page.screenshot({ path: 'postTweet10.png' })
     return ''
 }
 

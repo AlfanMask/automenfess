@@ -3,7 +3,6 @@ import bodyParser from "body-parser";
 import cors from "cors";
 import Tweet from "./constants/tweet";
 import tweeting from "./modules/tweeting/main"
-import { postTweet } from "./modules/tweeting/tweeting";
 import { isProcessing, processQueue, queueTweets } from "./queue";
 
 // initialize express app and middlewares
