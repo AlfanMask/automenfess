@@ -9,11 +9,12 @@ require('dotenv').config()
 puppeteer.use(StealthPlugin())
 
 // instances
+let browser: Browser;
 let page: Page;
 
 export default async function startTweeter() {
   // Launch the browser and open a new blank page
-  const browser: Browser = await puppeteer.launch({ headless: true });
+  browser = await puppeteer.launch({ headless: false });
   page = await browser.newPage();
 
   // generate random user agents so not detected as the same user
@@ -25,4 +26,4 @@ export default async function startTweeter() {
   await login()
 }
 
-export { page };
+export { page, browser };

@@ -4,3 +4,4 @@ node_modules
 cloud panel.txt
 twt account.txt
 dist.zip
+src/data/login_cookie.json

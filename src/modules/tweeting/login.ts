@@ -2,25 +2,24 @@ import * as path from 'path';
 import * as fs from 'fs';
 import { ElementHandle, NodeFor } from "puppeteer";
 import { delay } from "./helper/helper";
-import { page } from "./main";
+import { browser, page } from "./main";
 
 export default async function login() {
     try {
       // #1 LOGIN using Cookie
       await loginCookie()
+      console.log("LOGGED IN using cookie..")
     } catch (errorLoginCookie) {
       console.log('ERROR: login using cookie. ', errorLoginCookie);
   
       // #2 LOGIN manually
       try {
         await loginManual()
+        console.log("LOGGED IN manually..")
       } catch (errorLoginManually) {
-        console.log('ERROR: login using cookie. ', errorLoginManually);
-      } finally {
-        console.log("LOGGED IN using cookie..")
+        console.log('ERROR: login manually. ', errorLoginManually);
+        await browser.close();
       }
-    } finally {
-      console.log("LOGGED IN manually..")
     }
   }
   
@@ -63,7 +62,7 @@ async function loginManual() {
     await page.locator('input.r-30o5oe').fill(email);
     await delay(1000);
     console.log('login-1')
-
+  
     // click next
     let nextBtn: ElementHandle<NodeFor<any>> | null = await page.waitForSelector('::-p-xpath(//*[@id="layers"]/div/div/div/div/div/div/div[2]/div[2]/div/div/div[2]/div[2]/div/div/div/button[2])') || null;
     await nextBtn?.click()
@@ -74,8 +73,8 @@ async function loginManual() {
     const spanElements = await page.$$('span');
     console.log('login-3')
     for (const span of spanElements) {
-    const textContent = await span.evaluate(el => el.textContent);
-    if (textContent?.includes('Enter your phone number or username')) {
+      const textContent = await span.evaluate(el => el.textContent);
+      if (textContent?.includes('Enter your phone number or username')) {
         // fill username
         await page.locator('input.r-30o5oe').fill(username);
         await delay(1000);
@@ -85,7 +84,7 @@ async function loginManual() {
         await delay(1000);
         console.log('login-3')
         break;
-    }
+      }
     }
     console.log('login-4')
     
@@ -93,44 +92,44 @@ async function loginManual() {
     await delay(1000);
     console.log('login-5')
 
-    nextBtn = await page.waitForSelector('::-p-xpath(//*[@id="layers"]/div[2]/div/div/div/div/div/div[2]/div[2]/div/div/div[2]/div[2]/div[2]/div/div[1]/div/div/button)');
+    nextBtn = await page.waitForSelector('::-p-xpath(//*[@id="layers"]/div/div/div/div/div/div/div[2]/div[2]/div/div/div[2]/div[2]/div[2]/div/div[1]/div/div/button)');
     await nextBtn?.click()
     await delay(10000);
     console.log('login-6')
-
+  
     // check if there is a closed button in popup -> close    
     const buttonCount = await page.$$eval('button[aria-label="Close"]', (buttons) => buttons.length);
     console.log('login-7')
     const isAnyCloseBtn = buttonCount > 0;
     console.log('login-8')
     if (isAnyCloseBtn) {
-    await page.locator('button[aria-label="Close"]').click()
-    await delay(1000);
-    console.log('login-9')
+      await page.locator('button[aria-label="Close"]').click()
+      await delay(1000);
+      console.log('login-9')
     }
     console.log('login-10')
-
+  
     // close bottom popup if any
     await delay(5000);
     try{
-    const closeBtn = await page.waitForSelector('::-p-xpath(//*[@id="layers"]/div/div[1]/div/div/div/button)');
-    await closeBtn?.click()
-    console.log('login-11')
+      const closeBtn = await page.waitForSelector('::-p-xpath(//*[@id="layers"]/div/div[1]/div/div/div/button)');
+      await closeBtn?.click()
+      console.log('login-11')
     } catch (e) {
-    console.log(e)
+      console.log(e)
     }
 
     // if redirected to login again -> relogin
     const span2Elements = await page.$$('span');
     console.log('login-12')
     for (const span of span2Elements) {
-    const textContent = await span.evaluate(el => el.textContent);
-    if (textContent?.includes('Happening now')) {
+      const textContent = await span.evaluate(el => el.textContent);
+      if (textContent?.includes('Happening now')) {
         await page.goto('https://twitter.com/login/');
         await delay(1000);
         await loginCookie();
         break;
-    }
+      }
     }
 
     // wait for 10 seconds to page loaded prefectly before scraping
