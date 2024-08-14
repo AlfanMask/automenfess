@@ -1,6 +1,6 @@
 import queueRes from "./constants/queue";
 import { delay } from "./modules/tweeting/helper/helper";
-import { postTweet } from "./modules/tweeting/tweeting";
+import postTweet from "./modules/tweeting/post_tweet";
 
 let queueTweets: Array<queueRes> = []
 let isProcessing: boolean = false;
